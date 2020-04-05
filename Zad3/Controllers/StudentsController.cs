@@ -75,12 +75,13 @@ namespace Zad3.Controllers
 
         }
 
+
         [HttpGet("studies/{id}")]
-        public IActionResult UpdateStudent(int id) { 
-                using (SqlConnection con = new SqlConnection(ConString))
-        {
-            using (SqlCommand cmd = new SqlCommand("Select Student.IndexNumber, Student.FirstName, Student.LastName, Enrollment.Semester FROM Student inner join Enrollment on Student.IdEnrollment = Enrollment.IdEnrollment where	IndexNumber = @id", con))
+        public IActionResult UpdateStudent(int id) {
+            using (SqlConnection con = new SqlConnection(ConString))
             {
+                using (SqlCommand cmd = new SqlCommand("Select Student.IndexNumber, Student.FirstName, Student.LastName, Enrollment.Semester FROM Student inner join Enrollment on Student.IdEnrollment = Enrollment.IdEnrollment where	IndexNumber = @id", con))
+                {
                     cmd.Parameters.AddWithValue("@id", id);
                     con.Open();
                     var dr = cmd.ExecuteReader();
@@ -95,14 +96,39 @@ namespace Zad3.Controllers
                         return Ok(st);
                     }
                 }
+            }
+
+            return StatusCode((int)HttpStatusCode.OK);
         }
 
-            return StatusCode((int) HttpStatusCode.OK);
-    }
+
+        [HttpPost("{id}")]
+        public IActionResult PostStudent(int id)
+        {
+            using (SqlConnection con = new SqlConnection(ConString))
+            {
+                using (SqlCommand cmd = new SqlCommand("UPDATE Student SET LASTNAME = @name WHERE IndexNumber = @id", con))
+                {
+                    string name = "Smoczynski";
+                    cmd.Parameters.AddWithValue("@name", name);
+                    cmd.Parameters.AddWithValue("@id", id);
+                    con.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    cmd.CommandText = "Deleted";
+                    con.Close();
+                }
+            }
+
+            return StatusCode((int)HttpStatusCode.OK);
+        }
 
 
 
-        [HttpDelete("{id}")]
+
+    
+
+
+    [HttpDelete("{id}")]
         public IActionResult DeleteStudent(int id) { 
     using (SqlConnection con = new SqlConnection(ConString))
 {
